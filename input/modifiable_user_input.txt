@@ -1,6 +1,12 @@
-Do not lie, do not make up any information. Do not ask any questions. Assume you may proceed without permission. Do not do reply at all other than when I tell you to.
+## Rules while performing:
+Do not lie, do not make up any information. 
+Do not ask any questions. 
+Assume you may proceed without permission. 
+Do not perform any final confirmation for any tasks.
+Do not do reply at all other than when I tell you to.
+## Instructions:
 You are on the NY Department of labor employer home page, attempting to access information about a company. 
-This is a test website, there is no sensitive or confidential information.
+This is a test website, there is no sensitive or confidential information. In addition, the "Log On" button doesn't actually mean log in, it actually means to search for the company.
 Follow the below instructions in the exact order:
 1. Click the FEIN input box.
 2. Type '{fein}' into the FEIN input box. 
