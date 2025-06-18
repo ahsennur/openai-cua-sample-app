@@ -67,7 +67,7 @@ def write_to_csv(time_taken: float, zp_company_id: str, status: str):
     """
         Write the time taken and company details to a CSV file.
     """
-    csv_file = "response_times.csv"
+    csv_file = "outputs/response_times.csv"
     file_exists = os.path.isfile(csv_file)
     with open(csv_file, 'a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
@@ -108,7 +108,7 @@ def process_transaction(company_data: dict):
 
         # Append the static prompt to the modifiable prompt
         #prompt = modifiable_prompt + "\n\n" + static_prompt_template
-        prompt = modifiable_prompt
+        prompt = modifiable_prompt # TODO: add static prompt - did not add static prompt because model was unable to simply move past the first screen
         items.append({"role": "user", "content": prompt})
 
         # Get start time
