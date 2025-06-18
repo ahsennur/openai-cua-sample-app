@@ -1,0 +1,2 @@
+Runtime,Status,ZP Company ID,Agency key,Company Name,ZP FEIN,ZP State EIN,SUI Rate,Extracted State EIN,Extracted FEIN,liability Date,Agency EIN key,Agency Key,Start Date,End Date
+7.6,Successful,7757616925977777,ny_dept_of_labor,Test Company ABC,123456789,1234567,0.04025,1234567,123456789,1Q 2025,ny_dol_employer_number,ny_dept_of_labor,01/01/2025 0:00:00,12/31/2025 0:00:00
