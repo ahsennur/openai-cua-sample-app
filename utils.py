@@ -47,7 +47,7 @@ def sanitize_message(msg: dict) -> dict:
     return msg
 
 
-def create_response(**kwargs):
+def create_response(index, **kwargs):
     url = "https://api.openai.com/v1/responses"
     headers = {
         "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
@@ -62,6 +62,9 @@ def create_response(**kwargs):
 
     if response.status_code != 200:
         print(f"Error: {response.status_code} {response.text}")
+    
+    with open(f"outputs/api_calls/call_{index}.json", "w+") as file:
+        file.write(str(response.json()).replace("'","\""))
 
     return response.json()
 

@@ -118,7 +118,8 @@ class Agent:
         self.show_images = show_images
         new_items = []
 
-        # keep looping until we get a final response
+        # keep looping until we get a final 
+        i = 1
         while new_items[-1].get("role") != "assistant" if new_items else True:
             self.debug_print([sanitize_message(msg) for msg in input_items + new_items])
 
@@ -127,6 +128,7 @@ class Agent:
                 input=input_items + new_items,
                 tools=self.tools,
                 truncation="auto",
+                index = i
             )
             self.debug_print(response)
 
@@ -137,5 +139,7 @@ class Agent:
                 new_items += response["output"]
                 for item in response["output"]:
                     new_items += self.handle_item(item)
+            
+            i += 1
 
         return new_items
