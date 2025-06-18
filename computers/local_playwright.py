@@ -5,9 +5,10 @@ from .base_playwright import BasePlaywrightComputer
 class LocalPlaywrightComputer(BasePlaywrightComputer):
     """Launches a local Chromium instance using Playwright."""
 
-    def __init__(self, headless: bool = False):
+    def __init__(self, headless: bool = False, initial_url: str = "https://groupauthenticator.bcbsil.com/#/producer/login"):
         super().__init__()
         self.headless = headless
+        self.initial_url = initial_url
 
     def _get_browser_and_page(self) -> tuple[Browser, Page]:
         width, height = self.dimensions
@@ -28,7 +29,7 @@ class LocalPlaywrightComputer(BasePlaywrightComputer):
         page.set_viewport_size({"width": width, "height": height})
         page.on("close", self._handle_page_close)
 
-        page.goto("https://bing.com")
+        page.goto(self.initial_url)
         
         return browser, page
         

@@ -1,0 +1,22 @@
+There are two possible screens that will pop up after this:
+1. The same screen, but an error will be displayed stating the FEIN and ER No. combination as entered was not successful for login.
+2. The Employer Home Page, which will list items such as the UI Rate, liability date, and Legal Name.
+
+If #1 occurs, return the following JSON.
+{
+    'status': 'failed',
+    'reason': 'FEIN and State EIN combo does not match a company'
+}
+
+If #2 occurs, then perform the following steps:
+Obtain the FEIN, Employer Registration Number, liability date, rate year, UI rate and effective date information. These are all on the same page.
+Once obtained, return the following JSON with the extracted data.
+{
+    'status': 'success',
+    'fein': <the extracted FEIN>,
+    'state_ein': <the extracted employer Registration number>,
+    'sui_rate': <the extracted ui rate>,
+    'liability_date': <the extracted liability date>,
+    'rate_year': <the extracted rate year>,
+    'effective_date': <the extracted effective date>
+}

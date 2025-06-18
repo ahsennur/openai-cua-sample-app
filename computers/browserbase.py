@@ -131,7 +131,7 @@ class BrowserbaseBrowser(BasePlaywrightComputer):
         page = context.pages[0]
         page.on("close", self._handle_page_close)
 
-        page.goto("https://bing.com")
+        page.goto("https://groupauthenticator.bcbsil.com/#/producer/login")
 
         return browser, page
 
