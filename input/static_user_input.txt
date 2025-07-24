@@ -20,3 +20,5 @@ Once obtained, return the following JSON with the extracted data.
     'rate_year': <the extracted rate year>,
     'effective_date': <the extracted effective date>
 }
+
+IMPORTANT: After completing the above steps, ONLY output the JSON object for the relevant case (either success or failed). Do NOT include any explanation, summary, or extra text. Only output the JSON object, nothing else.
