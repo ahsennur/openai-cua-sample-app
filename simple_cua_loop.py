@@ -107,8 +107,7 @@ def process_transaction(company_data: dict):
             static_prompt_template = f.read()
 
         # Append the static prompt to the modifiable prompt
-        #prompt = modifiable_prompt + "\n\n" + static_prompt_template
-        prompt = modifiable_prompt # TODO: add static prompt - did not add static prompt because model was unable to simply move past the first screen
+        prompt = modifiable_prompt + "\n\n" + static_prompt_template
         items.append({"role": "user", "content": prompt})
 
         # Get start time
@@ -128,7 +127,12 @@ def process_transaction(company_data: dict):
             # Check if the response is valid
             if "output" not in response:
                 print(response)
-                raise ValueError("No output from model")
+                error_type = response.get('error', {}).get('type', '')
+                error_message = response.get('error', {}).get('message', '')
+                if error_type:
+                    raise ValueError(f"No output from model. API error: {error_type}: {error_message}")
+                else:
+                    raise ValueError(f"No output from model. API error: {error_message}")
 
             # Add the response to the items to maintain context & compliance
             items += response["output"]
@@ -139,6 +143,35 @@ def process_transaction(company_data: dict):
 
             # Check if the last item is an assistant response
             if items[-1].get("role") == "assistant":
+                # Save the assistant's JSON output to a file for this transaction
+                assistant_output = items[-1]["content"][0]["text"]
+                zp_company_id = company_data['ZP Company ID']
+                import json
+                try:
+                    # Parse the assistant's output as JSON
+                    data = json.loads(assistant_output.replace("'", '"'))
+                    # If 'sui_rate' exists, convert to float and divide by 100
+                    if "sui_rate" in data:
+                        try:
+                            rate = str(data["sui_rate"]).replace("%", "").strip()
+                            data["sui_rate"] = float(rate) / 100
+                        except Exception:
+                            pass
+                    # If 'state_ein' exists, remove all non-digit characters
+                    if "state_ein" in data:
+                        import re
+                        data["state_ein"] = re.sub(r"\D", "", str(data["state_ein"]))
+                    # If 'fein' exists, remove all non-digit characters
+                    if "fein" in data:
+                        import re
+                        data["fein"] = re.sub(r"\D", "", str(data["fein"]))
+                    # Save the possibly modified JSON
+                    with open(f"outputs/actual_{zp_company_id}.json", "w", encoding="utf-8") as f:
+                        json.dump(data, f, ensure_ascii=False, indent=2)
+                except Exception:
+                    # If parsing fails, save as is
+                    with open(f"outputs/actual_{zp_company_id}.json", "w", encoding="utf-8") as f:
+                        f.write(assistant_output)
                 break
 
             i += 1
