@@ -4,33 +4,37 @@ from typing import List, Dict, Literal
 from playwright.sync_api import sync_playwright, Browser, Page
 from utils import check_blocklisted_url
 
-# Optional: key mapping if your model uses "CUA" style keys
+# Map CUA key names to Playwright key names
 CUA_KEY_TO_PLAYWRIGHT_KEY = {
-    "/": "Divide",
-    "\\": "Backslash",
+    "ctrl": "Control",
+    "cmd": "Meta",
     "alt": "Alt",
+    "shift": "Shift",
+    "enter": "Enter",
+    "tab": "Tab",
+    "escape": "Escape",
+    "backspace": "Backspace",
+    "delete": "Delete",
+    "home": "Home",
+    "end": "End",
+    "pageup": "PageUp",
+    "pagedown": "PageDown",
+    "arrowup": "ArrowUp",
     "arrowdown": "ArrowDown",
     "arrowleft": "ArrowLeft",
     "arrowright": "ArrowRight",
-    "arrowup": "ArrowUp",
-    "backspace": "Backspace",
-    "capslock": "CapsLock",
-    "cmd": "Meta",
-    "ctrl": "Control",
-    "delete": "Delete",
-    "end": "End",
-    "enter": "Enter",
-    "esc": "Escape",
-    "home": "Home",
-    "insert": "Insert",
-    "option": "Alt",
-    "pagedown": "PageDown",
-    "pageup": "PageUp",
-    "shift": "Shift",
-    "space": " ",
-    "super": "Meta",
-    "tab": "Tab",
-    "win": "Meta",
+    "f1": "F1",
+    "f2": "F2",
+    "f3": "F3",
+    "f4": "F4",
+    "f5": "F5",
+    "f6": "F6",
+    "f7": "F7",
+    "f8": "F8",
+    "f9": "F9",
+    "f10": "F10",
+    "f11": "F11",
+    "f12": "F12",
 }
 
 
@@ -147,5 +151,5 @@ class BasePlaywrightComputer:
 
     # --- Subclass hook ---
     def _get_browser_and_page(self) -> tuple[Browser, Page]:
-        """Subclasses must implement, returning (Browser, Page)."""
+        """Subclasses override this to return (Browser, Page)."""
         raise NotImplementedError

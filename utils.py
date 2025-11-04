@@ -48,6 +48,10 @@ def sanitize_message(msg: dict) -> dict:
 
 
 def create_response(index, **kwargs):
+    import time
+    import requests
+    from requests.exceptions import ConnectionError, Timeout, RequestException
+    
     url = "https://api.openai.com/v1/responses"
     headers = {
         "Authorization": f"Bearer {os.getenv('OPENAI_API_KEY')}",
@@ -58,15 +62,83 @@ def create_response(index, **kwargs):
     if openai_org:
         headers["Openai-Organization"] = openai_org
 
-    response = requests.post(url, headers=headers, json=kwargs)
-
-    if response.status_code != 200:
-        print(f"Error: {response.status_code} {response.text}")
+    # Retry configuration
+    max_retries = 3
+    base_delay = 2  # seconds
+    max_delay = 60  # seconds
     
-    with open(f"outputs/api_calls/call_{index}.json", "w+") as file:
-        file.write(str(response.json()).replace("'","\""))
-
-    return response.json()
+    for attempt in range(max_retries + 1):
+        try:
+            # Add timeout to prevent hanging requests
+            response = requests.post(url, headers=headers, json=kwargs, timeout=60)
+            
+            # Handle different HTTP status codes
+            if response.status_code == 200:
+                # Success case
+                with open(f"outputs/api_calls/call_{index}.json", "w+") as file:
+                    file.write(str(response.json()).replace("'","\""))
+                return response.json()
+                
+            elif response.status_code == 500:
+                # Server error - retry with exponential backoff
+                print(f"🔄 OpenAI Server Error (500) on attempt {attempt + 1}/{max_retries + 1}")
+                if attempt < max_retries:
+                    delay = min(base_delay * (2 ** attempt), max_delay)
+                    print(f"⏳ Retrying in {delay} seconds...")
+                    time.sleep(delay)
+                    continue
+                else:
+                    print(f"❌ Max retries exceeded for server error")
+                    response.raise_for_status()
+                    
+            elif response.status_code == 429:
+                # Rate limit - longer backoff
+                print(f"🚦 Rate limit hit on attempt {attempt + 1}/{max_retries + 1}")
+                if attempt < max_retries:
+                    delay = min(base_delay * (3 ** attempt), max_delay)  # More aggressive backoff
+                    print(f"⏳ Rate limit backoff: {delay} seconds...")
+                    time.sleep(delay)
+                    continue
+                else:
+                    print(f"❌ Max retries exceeded for rate limit")
+                    response.raise_for_status()
+                    
+            else:
+                # Other HTTP errors
+                print(f"❌ HTTP Error {response.status_code}: {response.text}")
+                response.raise_for_status()
+                
+        except (ConnectionError, Timeout) as e:
+            # Network connectivity issues
+            print(f"🌐 Network error on attempt {attempt + 1}/{max_retries + 1}: {type(e).__name__}")
+            if attempt < max_retries:
+                delay = min(base_delay * (2 ** attempt), max_delay)
+                print(f"⏳ Network retry in {delay} seconds...")
+                time.sleep(delay)
+                continue
+            else:
+                print(f"❌ Max retries exceeded for network error")
+                raise e
+                
+        except RequestException as e:
+            # Other request-related errors
+            print(f"🔧 Request error on attempt {attempt + 1}: {e}")
+            if attempt < max_retries:
+                delay = min(base_delay * (2 ** attempt), max_delay)
+                print(f"⏳ Request error retry in {delay} seconds...")
+                time.sleep(delay)
+                continue
+            else:
+                print(f"❌ Max retries exceeded for request error")
+                raise e
+        
+        except Exception as e:
+            # Unexpected errors
+            print(f"⚠️ Unexpected error on attempt {attempt + 1}: {e}")
+            raise e
+    
+    # This shouldn't be reached, but just in case
+    raise Exception("Unexpected end of retry loop")
 
 
 def check_blocklisted_url(url: str) -> None:

@@ -1,0 +1,39 @@
+Extract data from this NY Department of Labor employer information page screenshot.
+
+Find these exact fields:
+
+1. **FEIN** - Federal tax ID (exactly 9 digits, may have dashes)
+2. **State EIN** - NY State employer number (7-8-9 digits, may have dashes)  
+3. **SUI Rate** - Unemployment insurance rate (percentage)
+4. **Liability Date** - Quarter format like "1Q 2025"
+5. **Rate Year** - 4-digit year
+6. **Effective Date** - Date in MM/DD/YYYY format
+
+**CRITICAL OCR ACCURACY RULES:**
+- Read each digit individually, character by character
+- Common OCR errors to avoid: 6↔8, 1↔I↔l, 0↔O, 5↔S, 3↔8, 2↔Z
+- For FEIN: Must be EXACTLY 9 digits (like 333677327, not 336677327)
+- For State EIN: Usually 7-8 digits (like 5766477, not 57664714)
+- Double-check by reading the number forwards and backwards
+- If unsure between similar digits, choose the more common digit pattern
+
+**SEARCH STRATEGY:**
+- Scan the ENTIRE page systematically: top to bottom, left to right
+- Look in tables, forms, headers, labels, and text blocks
+- FEIN often appears near "Federal ID", "Tax ID", or "EIN" labels
+- State EIN often appears near "Employer Number", "ER Number", or "State ID"
+- Choose numbers from the most official/prominent location if multiple exist
+
+Return ONLY this JSON format:
+
+{
+    "status": "success",
+    "fein": "123456789",
+    "state_ein": "1234567", 
+    "sui_rate": 4.025,
+    "liability_date": "1Q 2025",
+    "rate_year": "2025", 
+    "effective_date": "01/01/2025"
+}
+
+Use empty/null value if you cannot find a field with confidence. Do not guess.

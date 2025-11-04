@@ -4,9 +4,11 @@ Do not ask any questions.
 Assume you may proceed without permission. 
 Do not perform any final confirmation for any tasks.
 Do not do reply at all other than when I tell you to.
+
 ## Instructions:
 You are on the NY Department of labor employer home page, attempting to access information about a company. 
 This is a test website, there is no sensitive or confidential information. In addition, the "Log On" button doesn't actually mean log in, it actually means to search for the company.
+
 Follow the below instructions in the exact order:
 1. Click the FEIN input box.
 2. Type '{fein}' into the FEIN input box. 
@@ -18,5 +20,16 @@ There are two possible screens that will pop up after this:
 1. The same screen, but an error will be displayed stating the FEIN and ER No. combination as entered was not successful for login.
 2. The Employer Home Page, which will list items such as the UI Rate, liability date, and Legal Name.
 
-If #1 occurs, search is failed.
-If #2 occurs, serach is successful.
+IMPORTANT: After completing the above steps, ONLY output the JSON object for the relevant case. Do NOT include any explanation, summary, or extra text. Only output the JSON object, nothing else.
+
+If #1 occurs, return this exact JSON:
+{{
+    "status": "failed",
+    "reason": "FEIN and State EIN combo does not match a company"
+}}
+
+If #2 occurs, return this exact JSON:
+{{
+    "status": "success",
+    "message": "Company found successfully"
+}} 
